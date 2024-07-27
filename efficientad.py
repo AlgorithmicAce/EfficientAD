@@ -157,6 +157,9 @@ def main():
     print("Created all networks and loaded teacher network")
 
     # teacher frozen
+    teacher = torch.load('teacher_final.pth', map_location = 'cpu')
+    student = torch.load('student_final.pth', map_location = 'cpu')
+    autoencoder = torch.load('autoencoder_final.pth', map_location = 'cpu')
     teacher.eval()
     student.train()
     autoencoder.train()
