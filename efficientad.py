@@ -85,13 +85,16 @@ def main():
                                    config.dataset, config.subdataset, 'test')
     os.makedirs(train_output_dir)
     os.makedirs(test_output_dir)
+    print("Created directories")
 
     # load data
     full_train_set = ImageFolderWithoutTarget(
         os.path.join(dataset_path, config.subdataset, 'train'),
         transform=transforms.Lambda(train_transform))
+    print("Configured train data")
     test_set = ImageFolderWithPath(
         os.path.join(dataset_path, config.subdataset, 'test'))
+    print("Configured test data")
     if config.dataset == 'mvtec_ad':
         # mvtec dataset paper recommend 10% validation set
         train_size = int(0.9 * len(full_train_set))
@@ -112,8 +115,11 @@ def main():
 
     train_loader = DataLoader(train_set, batch_size=1, shuffle=True,
                               num_workers=4, pin_memory=True)
+    print("Loaded train data")
     train_loader_infinite = InfiniteDataloader(train_loader)
+    print("Created infinite train loader")
     validation_loader = DataLoader(validation_set, batch_size=1)
+    print("Loaded validation data")
 
     if pretrain_penalty:
         # load pretraining data for penalty
@@ -127,9 +133,12 @@ def main():
         ])
         penalty_set = ImageFolderWithoutTarget(config.imagenet_train_path,
                                                transform=penalty_transform)
+        print("Configured ImageNet data")
         penalty_loader = DataLoader(penalty_set, batch_size=1, shuffle=True,
                                     num_workers=4, pin_memory=True)
+        print("Loaded ImageNet data")
         penalty_loader_infinite = InfiniteDataloader(penalty_loader)
+        print("Created inifite ImageNet data")
     else:
         penalty_loader_infinite = itertools.repeat(None)
 
@@ -145,11 +154,13 @@ def main():
     state_dict = torch.load(config.weights, map_location='cpu')
     teacher.load_state_dict(state_dict)
     autoencoder = get_autoencoder(out_channels)
+    print("Created all networks and loaded teacher network")
 
     # teacher frozen
     teacher.eval()
     student.train()
     autoencoder.train()
+    print("Frozen teacher network")
 
     if on_gpu:
         teacher.cuda()
@@ -157,6 +168,7 @@ def main():
         autoencoder.cuda()
 
     teacher_mean, teacher_std = teacher_normalization(teacher, train_loader)
+    print("Normalized teacher network")
 
     optimizer = torch.optim.Adam(itertools.chain(student.parameters(),
                                                  autoencoder.parameters()),
