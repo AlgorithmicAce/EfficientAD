@@ -80,7 +80,7 @@ def main():
         pretrain_penalty = False
 
     update_model = False
-    if config.update_location == 'none':
+    if config.update_location != 'none':
         update_model = True
 
     # create output dir
