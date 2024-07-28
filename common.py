@@ -100,6 +100,91 @@ def get_pdn_medium(out_channels=384, padding=False):
                   kernel_size=1)
     )
 
+def ActualSmallStudentNetwork():
+    model = nn.Sequential(
+        nn.Conv2d(in_channels = 3, out_channels = 128, kernel_size = 4, stride = 1, padding = 3),
+        nn.ReLU(),
+        nn.AvgPool2d(kernel_size = 2, stride = 2, padding = 1),
+        nn.Conv2d(in_channels = 128, out_channels = 256, kernel_size = 4, stride = 1, padding = 3),
+        nn.ReLU(),
+        nn.AvgPool2d(kernel_size = 2, stride = 2, padding = 1),
+        nn.Conv2d(in_channels = 256, out_channels = 256, kernel_size = 3, stride = 1, padding = 1),
+        nn.ReLU(),
+        nn.Conv2d(in_channels = 256, out_channels = 768, kernel_size = 4, stride = 1, padding = 0)
+    )
+    return model
+
+def ActualSmallTeacherNetwork():
+    model =  nn.Sequential(
+        nn.Conv2d(in_channels = 3, out_channels = 128, kernel_size = 4, stride = 1, padding = 3),            
+        nn.ReLU(),
+        nn.AvgPool2d(kernel_size = 2, stride = 2, padding = 1),
+        nn.Conv2d(in_channels = 128, out_channels = 256, kernel_size = 4, stride = 1, padding = 3),
+        nn.ReLU(),
+        nn.AvgPool2d(kernel_size = 2, stride = 2, padding = 1),
+        nn.Conv2d(in_channels = 256, out_channels = 256, kernel_size = 3, stride = 1, padding = 1),
+        nn.ReLU(),
+        nn.Conv2d(in_channels = 256, out_channels = 384, kernel_size = 4, stride = 1, padding = 0)
+    )
+    return model
+
+def ActualAutoEncoder():
+    model = nn.Sequential(
+            
+            nn.Conv2d(in_channels = 3, out_channels = 32, kernel_size = 4, stride = 2, padding = 1),
+            nn.ReLU(),
+            
+            nn.Conv2d(in_channels = 32, out_channels = 32, kernel_size = 4, stride = 2, padding = 1),
+            nn.ReLU(),
+            
+            nn.Conv2d(in_channels = 32, out_channels = 64, kernel_size = 4, stride = 2, padding = 1),
+            nn.ReLU(),
+            
+            nn.Conv2d(in_channels = 64, out_channels = 64, kernel_size = 4, stride = 2, padding = 1),
+            nn.ReLU(),
+            
+            nn.Conv2d(in_channels = 64, out_channels = 64, kernel_size = 4, stride = 2, padding = 1),
+            nn.ReLU(),
+            
+            nn.Conv2d(in_channels = 64, out_channels = 64, kernel_size = 8, stride = 1, padding = 0),
+            
+            nn.Upsample(size = 3, mode='bilinear'),
+            nn.Conv2d(in_channels = 64, out_channels = 64, kernel_size = 4, stride = 1, padding = 2),
+            nn.ReLU(),
+            nn.Dropout(p = 0.2),
+            
+            nn.Upsample(size = 8, mode = 'bilinear'),
+            nn.Conv2d(in_channels = 64, out_channels = 64, kernel_size = 4, stride = 1, padding = 2),
+            nn.ReLU(),
+            nn.Dropout(p = 0.2),
+            
+            nn.Upsample(size = 15, mode = 'bilinear'),
+            nn.Conv2d(in_channels = 64, out_channels = 64, kernel_size = 4, stride = 1, padding = 2),
+            nn.ReLU(),
+            nn.Dropout(p = 0.2),
+            
+            nn.Upsample(size = 32, mode = 'bilinear'),
+            nn.Conv2d(in_channels = 64, out_channels = 64, kernel_size = 4, stride = 1, padding = 2),
+            nn.ReLU(),
+            nn.Dropout(p = 0.2),
+            
+            nn.Upsample(size = 63, mode = 'bilinear'),
+            nn.Conv2d(in_channels = 64, out_channels = 64, kernel_size = 4, stride = 1, padding = 2),
+            nn.ReLU(),
+            nn.Dropout(p = 0.2),
+            
+            nn.Upsample(size = 127, mode = 'bilinear'),
+            nn.Conv2d(in_channels = 64, out_channels = 64, kernel_size = 4, stride = 1, padding = 2),
+            nn.ReLU(),
+            nn.Dropout(p = 0.2),
+            
+            nn.Upsample(size = 64, mode = 'bilinear'),
+            nn.Conv2d(in_channels = 64, out_channels = 64, kernel_size = 3, stride = 1, padding = 1),
+            nn.ReLU(),
+            nn.Conv2d(in_channels = 64, out_channels = 384, kernel_size = 3, stride = 1, padding = 1)
+        )
+    return model
+
 class ImageFolderWithoutTarget(ImageFolder):
     def __getitem__(self, index):
         sample, target = super().__getitem__(index)
