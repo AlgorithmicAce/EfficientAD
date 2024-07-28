@@ -151,20 +151,22 @@ def main():
         teacher = torch.load('teacher_final.pth', map_location = 'cpu')
         student = torch.load('student_final.pth', map_location = 'cpu')
         autoencoder = torch.load('autoencoder_final.pth', map_location = 'cpu')
-
-    # create models
-    if config.model_size == 'small':
-        teacher = ActualSmallTeacherNetwork()
-        student = ActualSmallStudentNetwork()
-    elif config.model_size == 'medium':
-        teacher = get_pdn_medium(out_channels)
-        student = get_pdn_medium(2 * out_channels)
+        print("Loaded all model")
     else:
-        raise Exception()
-    state_dict = torch.load(config.weights, map_location='cpu')
-    teacher.load_state_dict(state_dict)
-    autoencoder = ActualAutoEncoder()
-    print("Created all networks and loaded teacher network")
+        # create models
+        if config.model_size == 'small':
+            teacher = ActualSmallTeacherNetwork()
+            student = ActualSmallStudentNetwork()
+        elif config.model_size == 'medium':
+            teacher = get_pdn_medium(out_channels)
+            student = get_pdn_medium(2 * out_channels)
+        else:
+            raise Exception()
+            
+            state_dict = torch.load(config.weights, map_location='cpu')
+            teacher.load_state_dict(state_dict)
+            autoencoder = ActualAutoEncoder()
+            print("Created all networks and loaded teacher network")
 
     # teacher frozen
     teacher.eval()
