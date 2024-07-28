@@ -10,8 +10,7 @@ import itertools
 import os
 import random
 from tqdm import tqdm
-from common import get_autoencoder, get_pdn_small, get_pdn_medium, \
-    ImageFolderWithoutTarget, ImageFolderWithPath, InfiniteDataloader
+from common import *
 from sklearn.metrics import roc_auc_score
 
 def get_argparse():
@@ -36,6 +35,8 @@ def get_argparse():
     parser.add_argument('-b', '--mvtec_loco_path',
                         default='./mvtec_loco_anomaly_detection',
                         help='Downloaded Mvtec LOCO dataset')
+    parser.add_argument('-u', '--update_location', default = 'none',
+                        help = 'Location for the checkpoint to retrain the model')
     parser.add_argument('-t', '--train_steps', type=int, default=70000)
     return parser.parse_args()
 
@@ -142,10 +143,15 @@ def main():
     else:
         penalty_loader_infinite = itertools.repeat(None)
 
+    if config.update_location is not None:
+        teacher = torch.load('teacher_final.pth', map_location = 'cpu')
+        student = torch.load('student_final.pth', map_location = 'cpu')
+        autoencoder = torch.load('autoencoder_final.pth', map_location = 'cpu')
+
     # create models
     if config.model_size == 'small':
-        teacher = get_pdn_small(out_channels)
-        student = get_pdn_small(2 * out_channels)
+        teacher = ActualSmallTeacherNetwork()
+        student = ActualSmallStudentNetwork()
     elif config.model_size == 'medium':
         teacher = get_pdn_medium(out_channels)
         student = get_pdn_medium(2 * out_channels)
@@ -153,13 +159,10 @@ def main():
         raise Exception()
     state_dict = torch.load(config.weights, map_location='cpu')
     teacher.load_state_dict(state_dict)
-    autoencoder = get_autoencoder(out_channels)
+    autoencoder = ActualAutoEncoder()
     print("Created all networks and loaded teacher network")
 
     # teacher frozen
-    teacher = torch.load('teacher_final.pth', map_location = 'cpu')
-    student = torch.load('student_final.pth', map_location = 'cpu')
-    autoencoder = torch.load('autoencoder_final.pth', map_location = 'cpu')
     teacher.eval()
     student.train()
     autoencoder.train()
