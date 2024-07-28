@@ -79,6 +79,10 @@ def main():
     if config.imagenet_train_path == 'none':
         pretrain_penalty = False
 
+    update_model = False
+    if config.update_location == 'none':
+        update_model = True
+
     # create output dir
     train_output_dir = os.path.join(config.output_dir, 'trainings',
                                     config.dataset, config.subdataset)
@@ -143,7 +147,7 @@ def main():
     else:
         penalty_loader_infinite = itertools.repeat(None)
 
-    if config.update_location is not None:
+    if update_model:
         teacher = torch.load('teacher_final.pth', map_location = 'cpu')
         student = torch.load('student_final.pth', map_location = 'cpu')
         autoencoder = torch.load('autoencoder_final.pth', map_location = 'cpu')
