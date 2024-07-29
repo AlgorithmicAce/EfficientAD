@@ -89,8 +89,7 @@ def main():
 
     # load data
     full_train_set = ImageFolderWithPath(
-        os.path.join(dataset_path, config.subdataset, 'Data', 'Images','Normal'),
-        transform=transforms.Lambda(train_transform))
+        os.path.join(dataset_path, config.subdataset, 'Data', 'Images','Normal'))
     print("Configured train data")
     bad_test_set = ImageFolderWithPath(
         os.path.join(dataset_path, config.subdataset, 'Data', 'Images','Normal'))
