@@ -326,9 +326,8 @@ def test(test_set, teacher, student, autoencoder, teacher_mean, teacher_std,
     y_true = []
     y_score = []
     for image, target, path in tqdm(test_set, desc=desc):
-        print(image, target, path)
-        orig_width = 1404
-        orig_height = 1070
+        orig_width = image.width
+        orig_height = image.height
         image = default_transform(image)
         image = image[None]
         if on_gpu:
@@ -351,7 +350,7 @@ def test(test_set, teacher, student, autoencoder, teacher_mean, teacher_std,
             file = os.path.join(test_output_dir, defect_class, img_nm + '.tiff')
             tifffile.imwrite(file, map_combined)
 
-        y_true_image = 0 if defect_class == 'good' else 1
+        y_true_image = 0 if defect_class == 'Normal_Images' else 1
         y_score_image = np.max(map_combined)
         y_true.append(y_true_image)
         y_score.append(y_score_image)
