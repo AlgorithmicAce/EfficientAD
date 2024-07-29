@@ -327,8 +327,9 @@ def test(test_set, teacher, student, autoencoder, teacher_mean, teacher_std,
     y_true = []
     y_score = []
     for image, target, path in tqdm(test_set, desc=desc):
-        orig_width = image.width
-        orig_height = image.height
+        print(image, target, path)
+        orig_width = 1404
+        orig_height = 1070
         image = default_transform(image)
         image = image[None]
         if on_gpu:
