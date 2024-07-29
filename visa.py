@@ -227,6 +227,25 @@ def main():
         optimizer.step()
         scheduler.step()
 
+        if iteration == 1:
+            q_st_start, q_st_end, q_ae_start, q_ae_end = map_normalization(
+                validation_loader=validation_loader, teacher=teacher,
+                student=student, autoencoder=autoencoder,
+                teacher_mean=teacher_mean, teacher_std=teacher_std,
+                desc='Initial map normalization')
+            auc_good = test(
+                test_set=good_test_set, teacher=teacher, student=student,
+                autoencoder=autoencoder, teacher_mean=teacher_mean,
+                teacher_std=teacher_std, q_st_start=q_st_start,
+                q_st_end=q_st_end, q_ae_start=q_ae_start, q_ae_end=q_ae_end,
+                test_output_dir=test_output_dir, desc='Initial inference for good data')
+            auc_bad = test(
+                test_set=bad_test_set, teacher=teacher, student=student,
+                autoencoder=autoencoder, teacher_mean=teacher_mean,
+                teacher_std=teacher_std, q_st_start=q_st_start,
+                q_st_end=q_st_end, q_ae_start=q_ae_start, q_ae_end=q_ae_end,
+                test_output_dir=test_output_dir, desc='Initial inference for bad data')
+
         if iteration % 10 == 0:
             tqdm_obj.set_description(
                 "Current loss: {:.4f}  ".format(loss_total.item()))
