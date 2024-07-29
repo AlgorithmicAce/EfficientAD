@@ -279,10 +279,10 @@ def main():
     torch.save(autoencoder, os.path.join(train_output_dir,
                                          'autoencoder_final.pth'))
 
-    # q_st_start, q_st_end, q_ae_start, q_ae_end = map_normalization(
-    #     validation_loader=validation_loader, teacher=teacher, student=student,
-    #     autoencoder=autoencoder, teacher_mean=teacher_mean,
-    #     teacher_std=teacher_std, desc='Final map normalization')
+    q_st_start, q_st_end, q_ae_start, q_ae_end = map_normalization(
+        validation_loader=validation_loader, teacher=teacher, student=student,
+        autoencoder=autoencoder, teacher_mean=teacher_mean,
+        teacher_std=teacher_std, desc='Final map normalization')
     torch.save(q_st_start, os.path.join(train_output_dir, 'qt_st_start.pt'))
     torch.save(q_st_end, os.path.join(train_output_dir, 'qt_st_end.pt'))
     torch.save(q_ae_start, os.path.join(train_output_dir, 'qt_ae_start.pt'))
