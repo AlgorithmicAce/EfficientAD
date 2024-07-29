@@ -88,7 +88,7 @@ def main():
     print("Created directories")
 
     # load data
-    full_train_set = ImageFolderWithoutTarget(
+    full_train_set = ImageFolderWithPath(
         os.path.join(dataset_path, config.subdataset, 'Data', 'Images','Normal'),
         transform=transforms.Lambda(train_transform))
     print("Configured train data")
