@@ -226,25 +226,7 @@ def main():
         optimizer.step()
         scheduler.step()
 
-        if iteration == 1:
-            q_st_start, q_st_end, q_ae_start, q_ae_end = map_normalization(
-                validation_loader=validation_loader, teacher=teacher,
-                student=student, autoencoder=autoencoder,
-                teacher_mean=teacher_mean, teacher_std=teacher_std,
-                desc='Initial map normalization')
-            auc_good = test(
-                test_set=good_test_set, teacher=teacher, student=student,
-                autoencoder=autoencoder, teacher_mean=teacher_mean,
-                teacher_std=teacher_std, q_st_start=q_st_start,
-                q_st_end=q_st_end, q_ae_start=q_ae_start, q_ae_end=q_ae_end,
-                test_output_dir=test_output_dir, desc='Initial inference for good data')
-            auc_bad = test(
-                test_set=bad_test_set, teacher=teacher, student=student,
-                autoencoder=autoencoder, teacher_mean=teacher_mean,
-                teacher_std=teacher_std, q_st_start=q_st_start,
-                q_st_end=q_st_end, q_ae_start=q_ae_start, q_ae_end=q_ae_end,
-                test_output_dir=test_output_dir, desc='Initial inference for bad data')
-
+        
         if iteration % 10 == 0:
             tqdm_obj.set_description(
                 "Current loss: {:.4f}  ".format(loss_total.item()))
@@ -263,25 +245,25 @@ def main():
             student.eval()
             autoencoder.eval()
 
-            q_st_start, q_st_end, q_ae_start, q_ae_end = map_normalization(
-                validation_loader=validation_loader, teacher=teacher,
-                student=student, autoencoder=autoencoder,
-                teacher_mean=teacher_mean, teacher_std=teacher_std,
-                desc='Intermediate map normalization')
-            auc_good = test(
-                test_set=good_test_set, teacher=teacher, student=student,
-                autoencoder=autoencoder, teacher_mean=teacher_mean,
-                teacher_std=teacher_std, q_st_start=q_st_start,
-                q_st_end=q_st_end, q_ae_start=q_ae_start, q_ae_end=q_ae_end,
-                test_output_dir=test_output_dir, desc='Intermediate inference for good data')
-            auc_bad = test(
-                test_set=bad_test_set, teacher=teacher, student=student,
-                autoencoder=autoencoder, teacher_mean=teacher_mean,
-                teacher_std=teacher_std, q_st_start=q_st_start,
-                q_st_end=q_st_end, q_ae_start=q_ae_start, q_ae_end=q_ae_end,
-                test_output_dir=test_output_dir, desc='Intermediate inference for bad data')
-            print('Intermediate image auc for good_data: {:.4f}'.format(auc_good))
-            print('Intermediate image auc for bad_data: {:.4f}'.format(auc_bad))
+            # q_st_start, q_st_end, q_ae_start, q_ae_end = map_normalization(
+            #     validation_loader=validation_loader, teacher=teacher,
+            #     student=student, autoencoder=autoencoder,
+            #     teacher_mean=teacher_mean, teacher_std=teacher_std,
+            #     desc='Intermediate map normalization')
+            # auc_good = test(
+            #     test_set=good_test_set, teacher=teacher, student=student,
+            #     autoencoder=autoencoder, teacher_mean=teacher_mean,
+            #     teacher_std=teacher_std, q_st_start=q_st_start,
+            #     q_st_end=q_st_end, q_ae_start=q_ae_start, q_ae_end=q_ae_end,
+            #     test_output_dir=test_output_dir, desc='Intermediate inference for good data')
+            # auc_bad = test(
+            #     test_set=bad_test_set, teacher=teacher, student=student,
+            #     autoencoder=autoencoder, teacher_mean=teacher_mean,
+            #     teacher_std=teacher_std, q_st_start=q_st_start,
+            #     q_st_end=q_st_end, q_ae_start=q_ae_start, q_ae_end=q_ae_end,
+            #     test_output_dir=test_output_dir, desc='Intermediate inference for bad data')
+            # print('Intermediate image auc for good_data: {:.4f}'.format(auc_good))
+            # print('Intermediate image auc for bad_data: {:.4f}'.format(auc_bad))
 
             # teacher frozen
             teacher.eval()
@@ -297,28 +279,28 @@ def main():
     torch.save(autoencoder, os.path.join(train_output_dir,
                                          'autoencoder_final.pth'))
 
-    q_st_start, q_st_end, q_ae_start, q_ae_end = map_normalization(
-        validation_loader=validation_loader, teacher=teacher, student=student,
-        autoencoder=autoencoder, teacher_mean=teacher_mean,
-        teacher_std=teacher_std, desc='Final map normalization')
+    # q_st_start, q_st_end, q_ae_start, q_ae_end = map_normalization(
+    #     validation_loader=validation_loader, teacher=teacher, student=student,
+    #     autoencoder=autoencoder, teacher_mean=teacher_mean,
+    #     teacher_std=teacher_std, desc='Final map normalization')
     torch.save(q_st_start, os.path.join(train_output_dir, 'qt_st_start.pt'))
     torch.save(q_st_end, os.path.join(train_output_dir, 'qt_st_end.pt'))
     torch.save(q_ae_start, os.path.join(train_output_dir, 'qt_ae_start.pt'))
     torch.save(q_ae_end, os.path.join(train_output_dir, 'qt_ae_end.pt'))
-    auc_good = test(
-        test_set=good_test_set, teacher=teacher, student=student,
-        autoencoder=autoencoder, teacher_mean=teacher_mean,
-        teacher_std=teacher_std, q_st_start=q_st_start, q_st_end=q_st_end,
-        q_ae_start=q_ae_start, q_ae_end=q_ae_end,
-        test_output_dir=test_output_dir, desc='Final inference')
-    auc_bad = test(
-                test_set=bad_test_set, teacher=teacher, student=student,
-                autoencoder=autoencoder, teacher_mean=teacher_mean,
-                teacher_std=teacher_std, q_st_start=q_st_start,
-                q_st_end=q_st_end, q_ae_start=q_ae_start, q_ae_end=q_ae_end,
-                test_output_dir=test_output_dir, desc='Intermediate inference for bad data')
-    print('Final image auc for good_data: {:.4f}'.format(auc_good))
-    print('Final image auc for bad_data: {:.4f}'.format(auc_bad))
+    # auc_good = test(
+    #     test_set=good_test_set, teacher=teacher, student=student,
+    #     autoencoder=autoencoder, teacher_mean=teacher_mean,
+    #     teacher_std=teacher_std, q_st_start=q_st_start, q_st_end=q_st_end,
+    #     q_ae_start=q_ae_start, q_ae_end=q_ae_end,
+    #     test_output_dir=test_output_dir, desc='Final inference')
+    # auc_bad = test(
+    #             test_set=bad_test_set, teacher=teacher, student=student,
+    #             autoencoder=autoencoder, teacher_mean=teacher_mean,
+    #             teacher_std=teacher_std, q_st_start=q_st_start,
+    #             q_st_end=q_st_end, q_ae_start=q_ae_start, q_ae_end=q_ae_end,
+    #             test_output_dir=test_output_dir, desc='Intermediate inference for bad data')
+    # print('Final image auc for good_data: {:.4f}'.format(auc_good))
+    # print('Final image auc for bad_data: {:.4f}'.format(auc_bad))
 
 def test(test_set, teacher, student, autoencoder, teacher_mean, teacher_std,
          q_st_start, q_st_end, q_ae_start, q_ae_end, test_output_dir=None,
