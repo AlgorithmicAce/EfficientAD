@@ -102,13 +102,20 @@ def main():
         good_test_size = len(full_train_set) - (train_size + validation_size)
         
         rng = torch.Generator().manual_seed(seed)
-        train_set, validation_set, good_test_set = torch.utils.data.random_split(full_train_set,
+        train_indices, validation_indices, good_test_indices = torch.utils.data.random_split(range(len(full_train_set)),
                                                            [train_size,
                                                             validation_size, good_test_size],
                                                            rng)
     else:
         raise Exception('Unknown config.dataset')
+    
+    train_set = torch.utils.data.Subset(full_train_set, train_indices)
+    train_set.dataset = ImageFolderWithoutTarget(os.path.join(dataset_path, config.subdataset, 'Data', 'Images', 'Normal'),transform=train_transform)
 
+    validation_set = torch.utils.data.Subset(full_train_set, validation_indices)
+    validation_set.dataset = ImageFolderWithoutTarget(os.path.join(dataset_path, config.subdataset, 'Data', 'Images', 'Normal'),transform=train_transform)
+
+    good_test_set = torch.utils.data.Subset(full_train_set, good_test_indices)
 
     train_loader = DataLoader(train_set, batch_size=1, shuffle=True,
                               num_workers=4, pin_memory=True)
